@@ -1,48 +1,60 @@
-$(function(){
-    var height, width;
-    // Select color input
-    // Select size input
+/*
+ *
+ *
+ *
+*/
 
-    // When size is submitted by the user, call makeGrid()    
-    $('input[type=submit]').on('click', function(event){
-        //remove previous table if any
-        $('tr').remove();
+let height, width, selectedColor, target, targetColor;
 
-        height = Number($('#inputHeight').val());
-        width = Number($('#inputWeight').val());
-
-        event.preventDefault();
-        makeGrid();
-    });
-
-    //using jquery's event delegation to listen to just one element (td) 
-    //instead of setting up listeners for all the td's
-    $('table').on('click', 'td', function() {
-        var chosenColor = $('#colorPicker').val();
-
-        var whiteBackground = "rgba(0, 0, 0, 0)";
-
-        if($(this).css('backgroundColor') === whiteBackground) {
-            $(this).css('background', chosenColor);
-        }else{            
-            $(this).css('background', whiteBackground);
-        }
-    });
+const tbl = $('#pixelCanvas');
+const button = $('input[type=submit]');
+const colorPicker = $('#colorPicker');
+const noColor = "rgba(0, 0, 0, 0)";	//Initial value of td (cell) backroundColor
 
 
-    
-    function makeGrid() {
-        var table, row, eachRow, cell;
+//When form is submitted
+button.on('click', function(event){
+    event.preventDefault();
 
-        table = document.getElementById("pixelCanvas");
-        for(row = 0; row < height; row++) {
-            eachRow = table.insertRow(row);
+    //Remove previous tr & td if any
+    tbl.children().remove();
 
-            for(cell = 0; cell < width; cell++) 
-                eachRow.insertCell(cell);            
-        }
+    height = $('#inputHeight').val();
+    width = $('#inputWeight').val();
 
-
-    }
-
+    makeGrid();
 });
+
+
+//When cell is clicked
+tbl.on('click', 'td', function(evt) {
+	//Get selected color
+    selectedColor = colorPicker.val();
+    //Get clicked cell
+    target = $(evt.target);
+    //Get color of clicked cell
+    targetColor = target.css('backgroundColor');
+    
+    if(targetColor === noColor) 
+        //Set cell color on 1st click
+        target.css('background', selectedColor);
+    else  
+        //Revert to no color on 2nd click
+        target.css('background', noColor); 
+});
+
+
+
+//===== FUNCTION DECLARATIONS =====//
+
+function makeGrid() {
+    for(let row = 0; row < height; row++) {
+    	//Create row
+        tbl.append("<tr></tr>");
+
+        for(let cell = 0; cell < width; cell++)
+        	//Create cells for each row
+            $("table tr").eq(row).append("<td></td>"); 
+    }
+}
+
